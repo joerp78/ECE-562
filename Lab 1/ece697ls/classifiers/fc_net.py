@@ -315,6 +315,7 @@ class FullyConnectedNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         caches = []
+        dropout_caches = []
         current = X
         
         for i in range(self.num_layers - 1):
@@ -333,6 +334,10 @@ class FullyConnectedNet(object):
             current, cache = affine_relu_forward(current, W, b)
           
           caches.append(cache)
+
+          if self.use_dropout:
+            current, dropout_cache = dropout_forward(current, self.dropout_param)
+            dropout_caches.append(dropout_cache)
           
         W_final = self.params[f'W{self.num_layers}']
         b_final = self.params[f'b{self.num_layers}']
@@ -373,6 +378,10 @@ class FullyConnectedNet(object):
         grads[f'W{self.num_layers}'] += self.reg * self.params[f'W{self.num_layers}']
         
         for i in range(self.num_layers - 2, -1, -1):
+          if self.use_dropout:
+            dropout_cache = dropout_caches[i]
+            dcurrent = dropout_backward(dcurrent, dropout_cache)
+
           cache = caches[i]
 
           if self.normalization == 'batchnorm':
