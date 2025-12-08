@@ -1,18 +1,18 @@
 module array_slice #(
-parameter IPNUT_WIDTH = 8,
+parameter INPUT_WIDTH = 8,
 parameter ACCUM_WIDTH = 32
 )(
 input logic CLK,
-input logic [IPNUT_WIDTH-1:0] W,
-input logic [IPNUT_WIDTH-1:0] X, 
-input logic [ACCUM_WIDTH-1:0] Yin,
-output logic [IPNUT_WIDTH-1:0] Xout,
-output logic [ACCUM_WIDTH-1:0] Yout
+input logic signed [INPUT_WIDTH-1:0] W,
+input logic signed [INPUT_WIDTH-1:0] X, 
+input logic signed [ACCUM_WIDTH-1:0] Yin,
+output logic signed [INPUT_WIDTH-1:0] Xout,
+output logic signed [ACCUM_WIDTH-1:0] Yout
 );
 
-	logic [IPNUT_WIDTH-1:0] x_reg;
-	logic [2*IPNUT_WIDTH-1:0] mult_res;
-	logic [ACCUM_WIDTH-1:0] add_res;
+	logic signed [INPUT_WIDTH-1:0] x_reg;
+	logic signed [2*INPUT_WIDTH-1:0] mult_res;
+	logic signed [ACCUM_WIDTH-1:0] add_res;
 	
 	always_ff @(posedge CLK) begin
 		x_reg <= X;
@@ -20,9 +20,9 @@ output logic [ACCUM_WIDTH-1:0] Yout
 	
 	assign Xout = x_reg;
 	
-	assign mult_result = W * x_reg;
+	assign mult_res = W * x_reg;
 	
-	assign add_result = $signed(mult_result) + Yin;
+	assign add_res = $signed(mult_res) + Yin;
 	
 	always_ff @(posedge CLK) begin
 		Yout <= add_res;
